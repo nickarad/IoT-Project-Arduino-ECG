@@ -11,7 +11,7 @@
 #define ORG "weipxj"
 #define DEVICE_TYPE "arduino_ecg"
 #define DEVICE_ID "ece8067"
-#define TOKEN "we)2k9CNZVi4K-yV*K"
+#define TOKEN "PYrXrkZIsUmdQ*n8X0"
 //====================================================================================
 
 //================== Pan-Tompkins constant ==========================================
