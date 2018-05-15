@@ -1,10 +1,4 @@
-/*
-  MQTT IOT Example
-  - continuously obtains values from the Virtuabotix DHT11 temperature/humidity sensor
-  - formats the results as a JSON string for the IBM IOT example
-  - connects to an MQTT server (either local or at the IBM IOT Cloud)
-  - and publishes the JSON String to the topic named quickstart:MY_MAC_ADDRESS
-*/
+
 
 #include <SPI.h>
 #include <Ethernet.h>
@@ -55,13 +49,13 @@ void setup()
   Ethernet.begin(mac, ip);
   Serial.begin(9600);
   if (!!!client.connected()) {
-    Serial.print("Reconnecting client to ");
-    Serial.println(server);
-    while (!!!client.connect(clientId, authMethod, token)) {
-      Serial.print(".");
-      //delay(500);
-    }
-    Serial.println();
+	Serial.print("Reconnecting client to ");
+	Serial.println(server);
+	while (!!!client.connect(clientId, authMethod, token)) {
+	  Serial.print(".");
+	  //delay(500);
+	}
+	Serial.println();
   }
 
 }
@@ -69,14 +63,15 @@ void setup()
 void loop()
 {
 
-  float ECG = getECG();		
+//   float ECG = getECG();	
+  int ecg=analogRead(0);	
   String payload = "{\"d\":";
-  payload += ECG;
+  payload += ecg;
   payload += "}";
   /*const size_t bufferSize = 2*JSON_OBJECT_SIZE(1) + 20;
-    DynamicJsonBuffer jsonBuffer(bufferSize);
+	DynamicJsonBuffer jsonBuffer(bufferSize);
 
-    const char* payload = "a";*/
+	const char* payload = "a";*/
 
   Serial.print("Sending payload: ");
   Serial.println(payload);
@@ -85,28 +80,28 @@ void loop()
   //{
   // client.publish(publishTopic, (char *)payload.c_str());
   if (client.publish(publishTopic, (char *)payload.c_str())) {
-    Serial.println("Publish ok");
-    if (!!!client.connected()) {
-      Serial.print("Reconnecting client to ");
-      Serial.println(server);
-      while (!!!client.connect(clientId, authMethod, token)) {
-        Serial.print(".");
-        //delay(500);
-      }
-      Serial.println();
-    }
+	Serial.println("Publish ok");
+	if (!!!client.connected()) {
+	  Serial.print("Reconnecting client to ");
+	  Serial.println(server);
+	  while (!!!client.connect(clientId, authMethod, token)) {
+		Serial.print(".");
+		//delay(500);
+	  }
+	  Serial.println();
+	}
 
   } else {
-    Serial.println("Publish failed");
-    if (!!!client.connected()) {
-      Serial.print("Reconnecting client to ");
-      Serial.println(server);
-      while (!!!client.connect(clientId, authMethod, token)) {
-        Serial.print(".");
-        //delay(500);
-      }
-      Serial.println();
-    }
+	Serial.println("Publish failed");
+	if (!!!client.connected()) {
+	  Serial.print("Reconnecting client to ");
+	  Serial.println(server);
+	  while (!!!client.connect(clientId, authMethod, token)) {
+		Serial.print(".");
+		//delay(500);
+	  }
+	  Serial.println();
+	}
 
   }
   delay(1);
@@ -122,12 +117,12 @@ void callback(char* publishTopic, char* payload, unsigned int length) {
 Serial.println("callback invoked");
 } 
 
-float getECG(void)
-	{
-		float analog0;
-		// Read from analogic in. 
-		analog0=analogRead(0);
-		// binary to voltage conversion
-		return analog0 = (float)analog0 * 3.3 / 1023.0;   
-	}
+// float getECG(void)
+// 	{
+// 		float analog0;
+// 		// Read from analogic in. 
+// 		analog0=analogRead(0);
+// 		// binary to voltage conversion
+// 		return analog0 = (float)analog0 * 3.3 / 1023.0;   
+// 	}
 

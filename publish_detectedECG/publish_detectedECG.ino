@@ -8,7 +8,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 //============================== IBM credentials =====================================
-#define ORG "weipxj"
+#define ORG "j6n17e"
 #define DEVICE_TYPE "arduino_ecg"
 #define DEVICE_ID "ece8067"
 #define TOKEN "PYrXrkZIsUmdQ*n8X0"
@@ -72,12 +72,11 @@ void setup() {
 	Ethernet.begin(mac, ip);
 	Serial.begin(9600);
 
-	
 	// ================ Client Connet =======================================
-	if (!!!client.connected()) {
+	if (!client.connected()) {
     	Serial.print("Reconnecting client to ");
     	Serial.println(server);
-    	while (!!!client.connect(clientId, authMethod, token)) {
+    	while (!client.connect(clientId, authMethod, token)) {
       		Serial.println("..");
     	}
     	Serial.println();
@@ -117,32 +116,33 @@ void loop() {
 			
 			Serial.print("Sending payload: ");
 			Serial.println(payload);
-			
-			if (client.publish(publishTopic, (char *)payload.c_str())) {
-				Serial.println("Publish ok");
-				if (!!!client.connected()) {
-					Serial.print("Reconnecting client to ");
-					Serial.println(server);
-					while (!!!client.connect(clientId, authMethod, token)) {
-						Serial.print(".");
-						//delay(500);
-					}
-					Serial.println();
-				}
-			} 
-			else {
-				Serial.println("Publish failed");
-				if (!!!client.connected()) {
-					Serial.print("Reconnecting client to ");
-					Serial.println(server);
-					while (!!!client.connect(clientId, authMethod, token)) {
-						Serial.print(".");
-						//delay(500);
-					}
-					Serial.println();
-				}
+			client.publish(publishTopic, (char *)payload.c_str());
 
-			}
+			// if (client.publish(publishTopic, (char *)payload.c_str())) {
+			// 	Serial.println("Publish ok");
+			// 	if (!client.connected()) {
+			// 		Serial.print("Reconnecting client to ");
+			// 		Serial.println(server);
+			// 		while (!client.connect(clientId, authMethod, token)) {
+			// 			Serial.print(".");
+			// 			delay(500);
+			// 		}
+			// 		Serial.println();
+			// 	}
+			// } 
+			// else {
+			// 	Serial.println("Publish failed");
+			// 	if (!client.connected()) {
+			// 		Serial.print("Reconnecting client to ");
+			// 		Serial.println(server);
+			// 		while (!client.connect(clientId, authMethod, token)) {
+			// 			Serial.print(".");
+			// 			//delay(500);
+			// 		}
+			// 		Serial.println();
+			// 	}
+
+			// }
 			
 		}
 	}    
