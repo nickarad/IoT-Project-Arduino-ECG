@@ -29,6 +29,7 @@ const char manageTopic[] = "iotdevice-1/mgmt/manage";
 const char updateTopic[] = "iotdm-1/device/update";
 const char rebootTopic[] = "iotdm-1/mgmt/initiate/device/reboot";
 
+// Callback function header
 void callback(char* publishTopic, char* payload, unsigned int payloadLength);
 //=================================================================================================
 
@@ -45,8 +46,8 @@ void setup()
 	Ethernet.begin(mac, ip);
 	Serial.begin(9600);
 	if (!client.connected()) {
-	Serial.print("Reconnecting client to ");
-	Serial.println(server);
+		Serial.print("Reconnecting client to ");
+		Serial.println(server);
 	while (!client.connect(clientId, authMethod, token)) {
 		Serial.print(".");
 		//delay(500);
@@ -73,7 +74,17 @@ void loop()
 
 
 void callback(char* publishTopic, char* payload, unsigned int length) {
-	Serial.println("callback invoked");
+	// In order to republish this payload, a copy must be made
+	// as the orignal payload buffer will be overwritten whilst
+	// constructing the PUBLISH packet.
+
+	// Allocate the correct amount of memory for the payload copy
+	byte* p = (byte*)malloc(length);
+	// Copy the payload to the new buffer
+	memcpy(p,payload,length);
+	client.publish("outTopic", p, length);
+	// Free the memory
+	free(p);
 } 
 
 // float getECG(void)
