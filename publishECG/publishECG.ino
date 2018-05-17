@@ -1,22 +1,18 @@
-
-
 #include <SPI.h>
 #include <Ethernet.h>
 #include <PubSubClient.h>
-
 
 #define ORG "j6n17e"
 #define DEVICE_TYPE "arduino_ecg"
 #define DEVICE_ID "ece8067"
 #define TOKEN "PYrXrkZIsUmdQ*n8X0"
 
-
 // Update this to either the MAC address found on the sticker on your ethernet shield (newer shields)
 // or a different random hexadecimal value (change at least the last four bytes)
 byte mac[]    = {0xDE, 0xED, 0xBA, 0xFE, 0xFE, 0xED };
-char macstr[] = "ece8067";
-// Note this next value is only used if you intend to test against a local MQTT server
-byte localserver[] = {192, 168, 1, 98 };
+// char macstr[] = "ece8067";
+// // Note this next value is only used if you intend to test against a local MQTT server
+// byte localserver[] = {192, 168, 1, 98 };
 // Update this value to an appropriate open IP on your local network
 byte ip[]     = {192, 168, 1, 20 };
 
@@ -44,77 +40,40 @@ float getECG(void);
 
 void setup()
 {
-
+	
   // Start the ethernet client, open up serial port for debugging, and attach the DHT11 sensor
-  Ethernet.begin(mac, ip);
-  Serial.begin(9600);
-  if (!!!client.connected()) {
+	Ethernet.begin(mac, ip);
+	Serial.begin(9600);
+	if (!client.connected()) {
 	Serial.print("Reconnecting client to ");
 	Serial.println(server);
-	while (!!!client.connect(clientId, authMethod, token)) {
-	  Serial.print(".");
-	  //delay(500);
+	while (!client.connect(clientId, authMethod, token)) {
+		Serial.print(".");
+		//delay(500);
 	}
 	Serial.println();
-  }
+	}
 
 }
-//int counter = 0;
+
 void loop()
 {
 
 //   float ECG = getECG();	
-  int ecg=analogRead(0);	
-  String payload = "{\"d\":";
-  payload += ecg;
-  payload += "}";
-  /*const size_t bufferSize = 2*JSON_OBJECT_SIZE(1) + 20;
-	DynamicJsonBuffer jsonBuffer(bufferSize);
-
-	const char* payload = "a";*/
-
-  Serial.print("Sending payload: ");
-  Serial.println(payload);
-  // client.publish(publishTopic, payload);
-  //if(client.connected())
-  //{
-  // client.publish(publishTopic, (char *)payload.c_str());
-  if (client.publish(publishTopic, (char *)payload.c_str())) {
-	Serial.println("Publish ok");
-	if (!!!client.connected()) {
-	  Serial.print("Reconnecting client to ");
-	  Serial.println(server);
-	  while (!!!client.connect(clientId, authMethod, token)) {
-		Serial.print(".");
-		//delay(500);
-	  }
-	  Serial.println();
-	}
-
-  } else {
-	Serial.println("Publish failed");
-	if (!!!client.connected()) {
-	  Serial.print("Reconnecting client to ");
-	  Serial.println(server);
-	  while (!!!client.connect(clientId, authMethod, token)) {
-		Serial.print(".");
-		//delay(500);
-	  }
-	  Serial.println();
-	}
-
-  }
-  delay(1);
-}
-
-String buildJson() {
-  String payload = "{\"d\": {\"value\": 20}}";
-  return payload;
+	int ecg=analogRead(0);	
+	String payload = "{\"d\":";
+	payload += ecg;
+	payload += "}";
+	Serial.print("Sending payload: ");
+	Serial.println(payload);
+	client.publish(publishTopic, (char *)payload.c_str());
+	
+	delay(1);
 }
 
 
 void callback(char* publishTopic, char* payload, unsigned int length) {
-Serial.println("callback invoked");
+	Serial.println("callback invoked");
 } 
 
 // float getECG(void)
