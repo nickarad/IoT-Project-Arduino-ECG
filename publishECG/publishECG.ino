@@ -2,10 +2,10 @@
 #include <Ethernet.h>
 #include <PubSubClient.h>
 
-#define ORG "j6n17e"
-#define DEVICE_TYPE "arduino_ecg"
-#define DEVICE_ID "ece8067"
-#define TOKEN "PYrXrkZIsUmdQ*n8X0"
+#define ORG "*******"
+#define DEVICE_TYPE "*******"
+#define DEVICE_ID "*******"
+#define TOKEN "*******"
 
 // Update this to either the MAC address found on the sticker on your ethernet shield (newer shields)
 // or a different random hexadecimal value (change at least the last four bytes)
@@ -48,10 +48,6 @@ void setup()
 	Ethernet.begin(mac, ip);
 	Serial.begin(9600);
 
-	// String payload = "{\"d\":";
-	// payload += 0;
-	// payload += "}";
-
 	if (!client.connected()) {
 		Serial.print("Reconnecting client to ");
 		Serial.println(server);
@@ -63,16 +59,6 @@ void setup()
 	}
 	Serial.println();
 	}
-
-	// if (client.connect(clientId, authMethod, token)) {
-    // 	client.publish(publishTopic, (char *)payload.c_str());
-	// 	Serial.print("Sending payload: ");
-	// 	Serial.println(payload);
-	// }
-	// else
-	// {
-	// 	Serial.print("Publish failed ");
-	// }
 
 }
 

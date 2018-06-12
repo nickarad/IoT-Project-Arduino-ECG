@@ -8,10 +8,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 //============================== IBM credentials =====================================
-#define ORG "j6n17e"
-#define DEVICE_TYPE "arduino_ecg"
-#define DEVICE_ID "ece8067"
-#define TOKEN "PYrXrkZIsUmdQ*n8X0"
+#define ORG "******"
+#define DEVICE_TYPE "******"
+#define DEVICE_ID "******"
+#define TOKEN "******"
 //====================================================================================
 
 //================== Pan-Tompkins constant ==========================================
@@ -62,10 +62,10 @@ const char rebootTopic[] = "iotdm-1/mgmt/initiate/device/reboot";
 void callback(char* publishTopic, char* payload, unsigned int payloadLength);
 
 EthernetClient ethClient;
-PubSubClient client(server, 1883, 0, ethClient);
+PubSubClient client(server, 1883, callback, ethClient);
 
 //=================================================================================================
-
+String payload;
 
 void setup() {
 
@@ -99,7 +99,7 @@ void loop() {
 		
 		// give next data point to algorithm
 		QRS_detected = detect(ecg);
-	
+		Serial.println("ecg");
 		//int next_ecg_pt = s_ecg[s_ecg_idx++];
 		//s_ecg_idx %= S_ECG_SIZE;
 		//d = detect(next_ecg_pt);
@@ -118,40 +118,27 @@ void loop() {
 			Serial.println(payload);
 			client.publish(publishTopic, (char *)payload.c_str());
 
-			// if (client.publish(publishTopic, (char *)payload.c_str())) {
-			// 	Serial.println("Publish ok");
-			// 	if (!client.connected()) {
-			// 		Serial.print("Reconnecting client to ");
-			// 		Serial.println(server);
-			// 		while (!client.connect(clientId, authMethod, token)) {
-			// 			Serial.print(".");
-			// 			delay(500);
-			// 		}
-			// 		Serial.println();
-			// 	}
-			// } 
-			// else {
-			// 	Serial.println("Publish failed");
-			// 	if (!client.connected()) {
-			// 		Serial.print("Reconnecting client to ");
-			// 		Serial.println(server);
-			// 		while (!client.connect(clientId, authMethod, token)) {
-			// 			Serial.print(".");
-			// 			//delay(500);
-			// 		}
-			// 		Serial.println();
-			// 	}
-
-			// }
 			
 		}
-	}    
-	delay(1);
+	}
+	client.loop();    
+	//delay(1);
 }
 
 //========================= IBM Callback ============================================
 void callback(char* publishTopic, char* payload, unsigned int length) {
-	Serial.println("callback invoked");
+	// In order to republish this payload, a copy must be made
+	// as the orignal payload buffer will be overwritten whilst
+	// constructing the PUBLISH packet.
+
+	// Allocate the correct amount of memory for the payload copy
+	byte* p = (byte*)malloc(length);
+	// Copy the payload to the new buffer
+	memcpy(p,payload,length);
+	//client.publish("outTopic", p, length);
+	client.publish(publishTopic, (char *)payload);
+	// Free the memory
+	free(p);
 } 
 //===================================================================================
 
