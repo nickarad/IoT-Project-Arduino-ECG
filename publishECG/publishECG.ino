@@ -35,9 +35,11 @@ void callback(char* publishTopic, char* payload, unsigned int payloadLength);
 
 
 EthernetClient ethClient;
-PubSubClient client(server, 1883, 0, ethClient);
+PubSubClient client(server, 1883, callback, ethClient);
 
 float getECG(void);
+String payload;
+
 
 void setup()
 {
@@ -45,9 +47,16 @@ void setup()
   // Start the ethernet client, open up serial port for debugging, and attach the DHT11 sensor
 	Ethernet.begin(mac, ip);
 	Serial.begin(9600);
+
+	// String payload = "{\"d\":";
+	// payload += 0;
+	// payload += "}";
+
 	if (!client.connected()) {
 		Serial.print("Reconnecting client to ");
 		Serial.println(server);
+		
+		// client.subscribe("inTopic");
 	while (!client.connect(clientId, authMethod, token)) {
 		Serial.print(".");
 		//delay(500);
@@ -55,21 +64,32 @@ void setup()
 	Serial.println();
 	}
 
+	// if (client.connect(clientId, authMethod, token)) {
+    // 	client.publish(publishTopic, (char *)payload.c_str());
+	// 	Serial.print("Sending payload: ");
+	// 	Serial.println(payload);
+	// }
+	// else
+	// {
+	// 	Serial.print("Publish failed ");
+	// }
+
 }
 
 void loop()
 {
 
-//   float ECG = getECG();	
+  	//float ECG = getECG();	
 	int ecg=analogRead(0);	
-	String payload = "{\"d\":";
+	payload = "{\"d\":";
 	payload += ecg;
 	payload += "}";
 	Serial.print("Sending payload: ");
 	Serial.println(payload);
 	client.publish(publishTopic, (char *)payload.c_str());
 	
-	delay(1);
+	 //delay(1);
+	client.loop();
 }
 
 
@@ -82,7 +102,8 @@ void callback(char* publishTopic, char* payload, unsigned int length) {
 	byte* p = (byte*)malloc(length);
 	// Copy the payload to the new buffer
 	memcpy(p,payload,length);
-	client.publish("outTopic", p, length);
+	// client.publish("outTopic", p, length);
+	client.publish(publishTopic, (char *)payload);
 	// Free the memory
 	free(p);
 } 
